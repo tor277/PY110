@@ -1,6 +1,7 @@
 import requests
 import json
 from datetime import datetime
+from geopy.geocoders import Nominatim
 
 # Словарь перевода значений направления ветра
 DIRECTION_TRANSFORM = {
@@ -46,6 +47,8 @@ def current_weather(lat, lon):
     """
     Описание функции, входных и выходных переменных
     """
+    geolocator = Nominatim(user_agent='my_test')
+    location = geolocator.geocode(f'{lat}, {lon}')
     token = 'ff83a23e-d3d2-42f4-8930-f0693baf3711'  # Вставить ваш токен
     url = f"https://api.weather.yandex.ru/v2/informers??lat=59.93&lon=30.31"
     headers = {"X-Yandex-API-Key": f"{token}"}
@@ -54,7 +57,7 @@ def current_weather(lat, lon):
     # return response.json()
 
     result = {
-        'city': "Санкт-Петербург", #data['geo_object']['locality']['name']
+        'city': location.address, #"Санкт-Петербург", #data['geo_object']['locality']['name']
         'time': datetime.fromtimestamp(data['fact']['obs_time']).strftime("%H:%M"),
         'temp': data['fact']['temp'],  # TODO Реализовать вычисление температуры из данных полученных от API
         'feels_like_temp': data['fact']['feels_like'],  # TODO Реализовать вычисление ощущаемой температуры из данных полученных от API
