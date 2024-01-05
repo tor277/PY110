@@ -92,7 +92,7 @@ def remove_from_cart(id_product: str) -> bool:
     """
     cart = view_in_cart()  # TODO Помните, что у вас есть уже реализация просмотра корзины,
     # поэтому, чтобы загрузить данные из корзины, не нужно заново писать код.
-    if id_product not in cart['pruducts']:
+    if id_product not in cart['products']:
         return False
     else:
         cart['products'].pop(id_product)
