@@ -31,28 +31,42 @@ def products_page_view(request, page):
     if request.method == "GET":
         if isinstance(page, str):
             for data in DATABASE.values():
-                if data['html'] == page:  # Если значение переданного параметра совпадает именем html файла
-            # TODO 1. Откройте файл open(f'store/products/{page}.html', encoding="utf-8") (Не забываем про контекстный менеджер with)
-            # TODO 2. Прочитайте его содержимое
-            # TODO 3. Верните HttpResponse c содержимым html файла
-                    with open(f'store/products/{page}.html', 'r', encoding='utf=8') as f:
-                        data = f.read()
-                    return HttpResponse(data)
+                if data['html'] == page:
+                    return render(request, "store/product.html", context={"product": data})
+                    #
+                    # with open(f'store/products/{page}.html', 'r', encoding='utf=8') as f:
+                    #     data = f.read()
+                    # return HttpResponse(data)
         elif isinstance(page, int):
-            if str(page) in DATABASE:
-                with open(f'store/products/{DATABASE[str(page)]["html"]}.html', 'r', encoding='utf=8') as f:
-                    data = f.read()
-                return HttpResponse(data)
-        # Если за всё время поиска не было совпадений, то значит по данному имени нет соответствующей
-        # страницы товара и можно вернуть ответ с ошибкой HttpResponse(status=404)
+            # if str(page) in DATABASE:
+            #     with open(f'store/products/{DATABASE[str(page)]["html"]}.html', 'r', encoding='utf=8') as f:
+            #         data = f.read()
+            #     return HttpResponse(data)
+            data = DATABASE.get(str(page))  # Получаем какой странице соответствует данный id
+            if data:
+                return render(request, "store/product.html", context={"product": data})
         return HttpResponse(status=404)
 
 def shop_view(request):
-    if request.method == 'GET':
-        # with open('store/shop.html', 'r', encoding='utf-8') as f:
-        #     data = f.read()
-        # return HttpResponse(data)
-        return render(request, 'store/shop.html', context={'products': DATABASE.values()})
+    # if request.method == 'GET':
+    #     # with open('store/shop.html', 'r', encoding='utf-8') as f:
+    #     #     data = f.read()
+    #     # return HttpResponse(data)
+    #     return render(request, 'store/shop.html', context={'products': DATABASE.values()})
+    if request.method == "GET":
+        # Обработка фильтрации из параметров запроса
+        category_key = request.GET.get("category")
+        if ordering_key := request.GET.get("ordering"):
+            if request.GET.get("reverse") in ('true', 'True'):
+                data = filtering_category(DATABASE, category_key, ordering_key,
+                                          True)
+            else:
+                data = filtering_category(DATABASE, category_key, ordering_key)
+        else:
+            data = filtering_category(DATABASE, category_key)
+        return render(request, 'store/shop.html',
+                      context={"products": data,
+                               "category": category_key})
 
 def cart_view(request):
     if request.method == "GET":
