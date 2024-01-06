@@ -174,5 +174,14 @@ def cart_buy_now_view(request, id_product):
         result = add_to_cart(id_product)
         if result:
             return redirect("store:cart_view")
+            # return cart_view(request)
 
         return HttpResponseNotFound("Неудачное добавление в корзину")
+
+def cart_remove_view(request, id_product):
+    if request.method == "GET":
+        result = remove_from_cart(id_product)  # TODO Вызвать функцию удаления из корзины
+        if result:
+            return redirect("store:cart_view")  # TODO Вернуть перенаправление на корзину
+
+        return HttpResponseNotFound("Неудачное удаление из корзины")
