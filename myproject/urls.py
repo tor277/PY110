@@ -23,5 +23,6 @@ from store.views import shop_view
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('app_weather.urls')),
-    path('', include('store.urls'))
+    path('', include('store.urls')),
+    path('login/', include('app_login.urls')),
 ]
